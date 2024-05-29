@@ -1,3 +1,8 @@
+/**
+ * @file maze.c
+ * @author Xu Mingyue
+ * @brief Code for the maze game for COMP1921 Assignment 2
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -237,12 +242,12 @@ coord get_start(FILE *file) {
  */
 maze read_map(maze maze, FILE *file)
 {
-	rewind(file);
 	char buffer[1024];
     int lineindex = 0;
     int height = get_height(file);
     int width = get_width(file);
     maze.map = (char**)malloc(sizeof(char*)*height);
+    rewind(file);
     while(fgets(buffer, 1024, file)) {
     	if((length_string(buffer) - 1) != 0) {
 		char *pos = strchr(buffer, '\n');
@@ -263,30 +268,29 @@ maze read_map(maze maze, FILE *file)
  * @param this pointer to maze to print
  * @param player the current player location
  */
-void print_maze(maze maze, coord player)
+void print_maze(maze *this, coord *player)
 {
     // make sure we have a leading newline..
     printf("\n");
     int i, j;
-    for (i = 0; i < maze.height; i++)
+    for (i = 0; i < this->height; i++)
     {
-        for (j = 0; j < maze.width; j++)
+        for (j = 0; j < this->width; j++)
         {
             // decide whether player is on this spot or not
-            if (player.x == j && player.y == i)
+            if (player->x == j && player->y == i)
             {
                 printf("X");
             }
             else
             {
-                printf("%c", maze.map[i][j]);
+                printf("%c", this->map[i][j]);
             }
         }
         // end each row with a newline.
         printf("\n");
     }
 }
-
 /**
  * @brief Check whether the player has won and return a pseudo-boolean
  *
@@ -363,7 +367,7 @@ void User_Move(maze maze, coord player) {
 			}
 		}
 		if (ch == 'M' || ch == 'm') {
-			print_maze(maze, player);
+			print_maze(&maze, &player);
 		}
 		if (ch == 'Q' || ch == 'q') {
 			printf("quit successfully");
@@ -389,7 +393,7 @@ int main(int argc, char *argv[])
 		printf("Invalid maze");
 		return 3;
 	}
-	// Store data into 2-dimensional array
+	// Store data into struct
 	coord player;
 	player.x = get_start(p).x;
 	player.y = get_start(p).y;
