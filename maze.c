@@ -242,6 +242,7 @@ coord get_start(FILE *file) {
  */
 maze read_map(maze maze, FILE *file)
 {
+	rewind(file);
 	char buffer[1024];
     int lineindex = 0;
     int height = get_height(file);
