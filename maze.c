@@ -240,13 +240,16 @@ maze read_map(maze maze, FILE *file)
 	rewind(file);
 	char buffer[1024];
     int lineindex = 0;
+    int height = get_height(file);
+    int width = get_width(file);
+    maze.map = (char**)malloc(sizeof(char*)*height);
     while(fgets(buffer, 1024, file)) {
     	if((length_string(buffer) - 1) != 0) {
 		char *pos = strchr(buffer, '\n');
 		if (pos != NULL) {
 			*pos = '\0';
 		}
-		maze.map[lineindex] = malloc(strlen(buffer) + 1);
+		maze.map[lineindex] = (char*)malloc((width+1)*sizeof(char));
 		strcpy(maze.map[lineindex], buffer);
 		lineindex++;
 		}
@@ -260,23 +263,23 @@ maze read_map(maze maze, FILE *file)
  * @param this pointer to maze to print
  * @param player the current player location
  */
-void print_maze(maze *this, coord *player)
+void print_maze(maze maze, coord player)
 {
     // make sure we have a leading newline..
     printf("\n");
     int i, j;
-    for (i = 0; i < this->height; i++)
+    for (i = 0; i < maze.height; i++)
     {
-        for (j = 0; j < this->width; j++)
+        for (j = 0; j < maze.width; j++)
         {
             // decide whether player is on this spot or not
-            if (player->x == j && player->y == i)
+            if (player.x == j && player.y == i)
             {
                 printf("X");
             }
             else
             {
-                printf("%c", this->map[i][j]);
+                printf("%c", maze.map[i][j]);
             }
         }
         // end each row with a newline.
@@ -360,7 +363,7 @@ void User_Move(maze maze, coord player) {
 			}
 		}
 		if (ch == 'M' || ch == 'm') {
-			print_maze(&maze, &player);
+			print_maze(maze, player);
 		}
 		if (ch == 'Q' || ch == 'q') {
 			printf("quit successfully");
