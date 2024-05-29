@@ -44,13 +44,17 @@ maze create_maze(maze maze, int height, int width, coord start, coord end)
  */ 
 int length_string(char *s)
 {
+    if (s == NULL) {
+        return 0;
+    }
+
     int i = 0;
-	while (*s != '\0')
-	{
-		s++;
-		i++;
-	}
-	return i;
+    while (*s != '\0')
+    {
+        s++;
+        i++;
+    }
+    return i;
 }
 
 /**
@@ -60,10 +64,10 @@ int length_string(char *s)
  * @return int 0 on success, 1 on fail
  */ 
 int Check_Symbol(char *s) {
-	char arr[] = {' ', '#', 'E', 'S', '\n'};
+	char arr[] = {' ', '#', 'E', 'S', '\n', '\0'};
 	int i, j;
 	for (i = 0; i < length_string(s); i++) {
-		for (j = 0; j < (int)sizeof(arr); j++) {
+		for (j = 0; arr[j] != '\0'; j++) {
 			if (s[i] == arr[j]) {
 				return 0;
 			}
@@ -372,32 +376,24 @@ int main(int argc, char *argv[])
 		printf("Argument error");
 		return 1;
 	}
-	else
-	{
-		// Check the validity of the maze
-		FILE *p = fopen(argv[1], "r");
-		if (p == NULL)
-		{
-			printf("File error");
-			return 2;
-		}
-		else
-		{
-			if (Check_maze_Valid(p) != 0)
-			{
-				printf("Invalid maze");
-				return 3;
-			}
-			// Store data into 2-dimensional array
-			maze instance;
-			instance = create_maze(instance, get_height(p), get_width(p), get_start(p), get_end(p));
-            instance = read_map(instance, p);
-			coord player;
-			player.x = get_start(p).x;
-			player.y = get_start(p).y;
-			User_Move(instance, player);
-			fclose(p);
-		}
+	// Check the validity of the maze
+	FILE *p = fopen(argv[1], "r");
+	if (p == NULL) {
+		printf("File error");
+		return 2;
 	}
+	if (Check_maze_Valid(p) == 1) {
+		printf("Invalid maze");
+		return 3;
+	}
+	// Store data into 2-dimensional array
+	coord player;
+	player.x = get_start(p).x;
+	player.y = get_start(p).y;
+	maze instance;
+	instance = create_maze(instance, get_height(p), get_width(p), get_start(p), get_end(p));
+    instance = read_map(instance, p);
+	User_Move(instance, player);
+	fclose(p);
 	return 0;
 }
