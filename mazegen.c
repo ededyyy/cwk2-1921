@@ -11,6 +11,7 @@
 
 #define PATH 0
 #define WALL 1
+#define MAX_DEPTH 50 
 typedef struct __Coord
 {
     int x;
@@ -118,10 +119,13 @@ maze initial_maze(maze maze, int height, int width) {
  * @param int y
  * @return maze
  */
-maze generate_maze(maze instance, int x, int y) {
+maze generate_maze(maze instance, int x, int y, int depth) {
 	// Select directions randomly
 	instance.map[x][y] = PATH;
 	if (x == instance.end.x && y == instance.end.y) {
+		return instance;
+	}
+	if (depth == 0) {
 		return instance;
 	}
 	int direction[4][2] = { { 1,0 },{ -1,0 },{ 0,1 },{ 0,-1 } };
@@ -158,11 +162,11 @@ maze generate_maze(maze instance, int x, int y) {
 					}
 				}
 			}
-			// if path out of edge, break
-			if (dx < 1 || dx > (instance.height - 2) || dy < 1 || dy > (instance.width - 2)) {
+			if (count > 1) {
 				break;
 			}
-			if (count > 1) {
+			// if path out of edge, break
+			if (dx < 1 || dx > (instance.height - 2) || dy < 1 || dy > (instance.width - 2)) {
 				break;
 			}
 			--range;
@@ -170,7 +174,7 @@ maze generate_maze(maze instance, int x, int y) {
 		}
 		// recursive
 		if (range <= 0) {
-			generate_maze(instance, dx, dy);
+			generate_maze(instance, dx, dy, depth - 1);
 		}
 	}
 	return instance;
@@ -227,7 +231,7 @@ int main(int argc, char *argv[]) {
 	}
 	maze instance;
 	instance = initial_maze(instance, height, width);
-	instance = generate_maze(instance, instance.start.x, instance.start.y);
+	instance = generate_maze(instance, instance.start.x, instance.start.y, MAX_DEPTH);
 	print_maze(p, instance);
 	fclose(p);
 	printf("success");
