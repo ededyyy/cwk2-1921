@@ -89,7 +89,7 @@ maze initial_maze(maze maze, int height, int width) {
 	maze.map = (int**)malloc(sizeof(int*)*height);
 	int i, j;
 	for (i = 0; i < height; i++) {
-		maze.map[i] = (int*)malloc((width+1)*sizeof(int));
+		maze.map[i] = (int*)calloc(height, sizeof(int));
 	}
 	for (i = 1; i < (height - 1); i++) {
 		for (j = 1;j < (width - 1); j++) {
@@ -123,7 +123,7 @@ maze generate_maze(maze instance, int x, int y) {
 	instance.map[x][y] = PATH;
 	if (x == instance.end.x && y == instance.end.y) {
 		return instance;
-	} 
+	}
 	int direction[4][2] = { { 1,0 },{ -1,0 },{ 0,1 },{ 0,-1 } };
 	int i;
 	for (i = 0; i < 4; i++) {
@@ -231,11 +231,5 @@ int main(int argc, char *argv[]) {
 	print_maze(p, instance);
 	fclose(p);
 	printf("success");
-	// Free the memory
-	int i;
-	for (i = 0; i < instance.height; i++) {
-		free(instance.map[i]);
-	}
-	free(instance.map);
 	return 0;
 } 
