@@ -44,6 +44,7 @@ int is_int(char *str) {
 	}
 	return 0;
 }
+
 /**
  * @brief Set start point for maze
  *
@@ -51,7 +52,6 @@ int is_int(char *str) {
  * @return maze
  */
 maze set_start(maze instance) {
-	srand((unsigned)time(NULL));
 	int i = rand() % (instance.height - 2) + 1;
 	int j = rand() % (instance.width - 2) + 1;
 	instance.start.x = j;
@@ -66,7 +66,6 @@ maze set_start(maze instance) {
  * @return maze
  */
 maze set_end(maze instance) {
-	srand((unsigned)time(NULL));
 	do {
 		int i = rand() % (instance.height - 2) + 1;
 	    int j = rand() % (instance.width - 2 ) + 1;
@@ -121,8 +120,10 @@ maze initial_maze(maze maze, int height, int width) {
  */
 maze generate_maze(maze instance, int x, int y) {
 	// Select directions randomly
-	srand((unsigned)time(NULL));
 	instance.map[x][y] = PATH;
+	if (x == instance.end.x && y == instance.end.y) {
+		return instance;
+	} 
 	int direction[4][2] = { { 1,0 },{ -1,0 },{ 0,1 },{ 0,-1 } };
 	int i;
 	for (i = 0; i < 4; i++) {
@@ -156,6 +157,10 @@ maze generate_maze(maze instance, int x, int y) {
 						count++;
 					}
 				}
+			}
+			// if path out of edge, break
+			if (dx < 1 || dx > (instance.height - 2) || dy < 1 || dy > (instance.width - 2)) {
+				break;
 			}
 			if (count > 1) {
 				break;
@@ -208,6 +213,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 	FILE *p = fopen(argv[1], "w");
+	srand((unsigned)time(NULL));
 	int height = atoi(argv[3]);
 	int width = atoi(argv[2]);
 	// Check if the arguments are invalid
@@ -225,6 +231,7 @@ int main(int argc, char *argv[]) {
 	print_maze(p, instance);
 	fclose(p);
 	printf("success");
+	// Free the memory
 	int i;
 	for (i = 0; i < instance.height; i++) {
 		free(instance.map[i]);
